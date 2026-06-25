@@ -36,10 +36,8 @@ export const createProduct = asyncHandler(async (req, res) => {
     name,
     description,
     price,
-    discount = 0,
     stock = 0,
     category,
-    brand,
     features,
     isBest,
 
@@ -100,9 +98,7 @@ export const createProduct = asyncHandler(async (req, res) => {
 
 
 
-  const finalPrice =
-  Number(price) -
-  (Number(price) * Number(discount)) / 100;
+
 
 
 
@@ -129,23 +125,22 @@ export const createProduct = asyncHandler(async (req, res) => {
 
     price:Number(price),
 
-    discount:Number(discount),
-
-    finalPrice,
-
     stock:Number(stock),
 
     category,
 
-    brand,
-
     images,
 
 
-    features:
-    features
-    ? JSON.parse(features)
-    : [],
+    features: features
+      ? typeof features === "string"
+        ? features.startsWith("[")
+          ? JSON.parse(features)
+          : features.split(",").map((f) => f.trim()).filter(Boolean)
+        : Array.isArray(features)
+          ? features
+          : []
+      : [],
 
 
 
@@ -227,20 +222,20 @@ filter.category = category;
 if(minPrice || maxPrice){
 
 
-filter.finalPrice={};
+filter.price={};
 
 
 
 if(minPrice)
 
-filter.finalPrice.$gte =
+filter.price.$gte =
 Number(minPrice);
 
 
 
 if(maxPrice)
 
-filter.finalPrice.$lte =
+filter.price.$lte =
 Number(maxPrice);
 
 
@@ -380,13 +375,9 @@ description,
 
 price,
 
-discount,
-
 stock,
 
 category,
-
-brand,
 
 features,
 
@@ -397,25 +388,7 @@ isBest
 
 
 
-if(price !== undefined || discount !== undefined){
 
-
-const newPrice =
-Number(price ?? product.price);
-
-
-
-const newDiscount =
-Number(discount ?? product.discount);
-
-
-
-product.finalPrice =
-newPrice -
-(newPrice * newDiscount) / 100;
-
-
-}
 
 
 
@@ -449,11 +422,6 @@ description ?? product.description;
 product.price =
 price ?? product.price;
 
-
-product.discount =
-discount ?? product.discount;
-
-
 product.stock =
 stock ?? product.stock;
 
@@ -463,18 +431,16 @@ category ?? product.category;
 
 
 
-product.brand =
-brand ?? product.brand;
-
-
-
 
 
 if (features) {
-  product.features = features
-    .split(",")
-    .map((f) => f.trim())
-    .filter(Boolean);
+  product.features = typeof features === "string"
+    ? features.startsWith("[")
+      ? JSON.parse(features)
+      : features.split(",").map((f) => f.trim()).filter(Boolean)
+    : Array.isArray(features)
+      ? features
+      : [];
 }
 
 

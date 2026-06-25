@@ -23,11 +23,6 @@ const productSchema = new mongoose.Schema(
       type: String,
     },
 
-    brand: {
-      type: String,
-      trim: true,
-    },
-
     stock: {
       type: Number,
       default: 0,
@@ -67,7 +62,7 @@ const productSchema = new mongoose.Schema(
 
 // ================= INDEXES =================
 productSchema.index({ name: "text" });
-productSchema.index({ category: 1, subCategory: 1 });
+productSchema.index({ category: 1 });
 productSchema.index({ price: 1 });
 
 export default mongoose.model("Product", productSchema);

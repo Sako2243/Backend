@@ -35,4 +35,4 @@ const gallerySchema = new mongoose.Schema(
 
 gallerySchema.index({ type: 1 });
 
-export default mongoose.model("Gallery", gallerySchema);
+export default mongoose.model("Review", gallerySchema);
